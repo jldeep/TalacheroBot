@@ -4,6 +4,7 @@ const conf = require('./conf')
 const TelegramBot = require('node-telegram-bot-api')
 const Youtube = require('./lib/youtube')
 const googleImages = require('./lib/google-images')
+const giphy = require('./lib/giphy')
 const fs = require('fs')
 
 let token = conf.telegram
@@ -60,5 +61,24 @@ bot.onText(/\/img/, msg => {
   .catch(err => {
     console.log(err)
     bot.sendMessage(chatId, msg.from.first_name + ' ' + err.message , opts);
+  })
+})
+
+bot.onText(/\/gif/, msg => {
+  let chatId = msg.chat.id
+  let message = msg.text.split("/gif ")
+  giphy(message[1])
+  .then(gif => {
+    return [bot.sendDocument(chatId, gif), gif]
+  })
+  .spread((resp, gif) => {
+    fs.unlinkSync(gif)
+  })
+  .catch(err => {
+    console.log(err)
+    bot.sendMessage(chatId, msg.from.first_name + ' el gif presentó un problema. Intentalo de nuevo :(' , opts);
+  })
+  .catch(err => {
+    console.log(err)
   })
 })

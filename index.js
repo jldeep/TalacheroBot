@@ -10,7 +10,7 @@ let token = conf.telegram
 
 let bot = new TelegramBot(token, {polling: true})
 
-bot.onText(/\/yt/, msg => {
+bot.onText(/\/youtube/, msg => {
   let chatId = msg.chat.id
   let text = msg.text.split("/yt ")
   let message = ''
@@ -54,9 +54,11 @@ bot.onText(/\/img/, msg => {
     fs.unlinkSync(image)
   })
   .catch(err => {
-    bot.sendMessage(chatId, msg.from.first_name + 'la imagen presentó un problema. Intentalo de nuevo :(' , opts);
+    console.log(err)
+    bot.sendMessage(chatId, msg.from.first_name + ' la imagen presentó un problema. Intentalo de nuevo :(' , opts);
   })
   .catch(err => {
+    console.log(err)
     bot.sendMessage(chatId, msg.from.first_name + ' ' + err.message , opts);
   })
 })

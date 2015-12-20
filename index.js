@@ -5,13 +5,14 @@ const TelegramBot = require('node-telegram-bot-api')
 const Youtube = require('./lib/youtube')
 const googleImages = require('./lib/google-images')
 const giphy = require('./lib/giphy')
+const openWeather = require('./lib/open-weather')
 const fs = require('fs')
 
 let token = conf.telegram
 
 let bot = new TelegramBot(token, {polling: true})
 
-bot.onText(/\/youtube/, msg => {
+  bot.onText(/\/youtube/, msg => {
   let chatId = msg.chat.id
   let text = msg.text.split("/yt ")
   let message = ''
@@ -77,6 +78,27 @@ bot.onText(/\/gif/, msg => {
   .catch(err => {
     console.log(err)
     bot.sendMessage(chatId, msg.from.first_name + ' el gif presentó un problema. Intentalo de nuevo :(' , opts);
+  })
+  .catch(err => {
+    console.log(err)
+  })
+})
+
+bot.on('location', msg => {
+  let chatId = msg.chat.id
+  let longitude = msg.location.longitude
+  let latitude = msg.location.latitude
+  openWeather(longitude, latitude)
+  .then(weather => {
+    let temp = weather.main.temp - 273.15
+    let tempMin = weather.main.temp_min - 273.15
+    let tempMax = weather.main.temp_max - 273.15
+    temp = temp.toFixed(2)
+    tempMin = tempMin.toFixed(2)
+    tempMax = tempMax.toFixed(2)
+    let name = weather.name
+    let text = msg.from.first_name + ' estas cerca de ' + name + ' y la temperatura actual es de: ' + temp + 'º con una minima de: ' + tempMin + 'º y una maxima de ' + tempMax + 'º' ;
+    bot.sendMessage(chatId, text)
   })
   .catch(err => {
     console.log(err)

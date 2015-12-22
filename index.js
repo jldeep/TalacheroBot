@@ -14,7 +14,7 @@ let bot = new TelegramBot(token, {polling: true})
 
   bot.onText(/\/youtube/, msg => {
   let chatId = msg.chat.id
-  let text = msg.text.split("/yt ")
+  let text = msg.text.split("/youtube ")
   let message = ''
   Youtube(text)
   .then(value => {
